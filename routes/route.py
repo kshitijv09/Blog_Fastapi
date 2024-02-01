@@ -1,14 +1,17 @@
-from fastapi import Depends,APIRouter, HTTPException
+from fastapi import Depends,APIRouter, HTTPException, Query
 from models.blogs import Blogs
 from config.database import collection_name
 from schema.schemas import individual_serial, list_serial
 from bson import ObjectId
 from jwt import verify_token, TokenData
+from bson import ObjectId
+from routes.userRoute  import get_user_by_id
 blogRouter = APIRouter()
 
 # Get all blogs
 @blogRouter.get("/")
 async def getBlogs(token_data: TokenData = Depends(verify_token)):
+    print(token_data)
     blogs = list_serial(collection_name.find())
     return blogs
 
@@ -20,6 +23,29 @@ async def getBlogById(blog_id: str):
         return individual_serial(blog)
     else:
         raise HTTPException(status_code=404, detail="Blog not found")
+
+@blogRouter.get("{user_id}/blogs")
+async def getBlogByUser(user_id: str, limit: int = Query(10, description="Number of blogs to return per page"),skip: int = Query(0, description="Number of blogs to skip")):
+    user=get_user_by_id(user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user_interests = user.get("interests", [])
+
+    user_interests = [interest["name"] for interest in user_interests]
+    print("User interest",user_interests)
+    """ blogs = collection_name.find({"tag": {"$in": user_interests}}) """
+    blogs=list_serial(collection_name.find())
+    print("Blogs are ",blogs)
+    
+    # Sort blogs based on the user's interests
+    blogs.sort(key=lambda x: user_interests.index(x["tag"]) if x["tag"] in user_interests else len(user_interests))
+# Sort blogs based on the user's interests
+    print("SBlogs are ",blogs)
+    """ for blog in sorted_blogs:
+        blog.pop('_id', None) """
+    paginated_blogs = blogs[skip:skip + limit]
+    return paginated_blogs
 
 # Create a new blog
 @blogRouter.post("/")
