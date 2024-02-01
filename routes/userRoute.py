@@ -8,11 +8,6 @@ from models.users import User,UserProfileUpdate,UserInterestsUpdate
 from bson import ObjectId
 userRouter=APIRouter()
 
-
-""" @router.get("/")
-def read_root(current_user: User = Depends(get_current_user)):
-    return {"data": "Hello World"} """
-
 @userRouter.post('/register')
 def create_user(request: User):
     hashed_pass = Hash.bcrypt(request.password)
@@ -47,7 +42,7 @@ def update_profile(username: str, request: UserProfileUpdate):
 
     return {"message": f"Profile for user {username} updated successfully"}
 
-@userRouter.get('/user/{user_id}')
+@userRouter.get('/{user_id}')
 def get_user_by_id(user_id: str):
     # Check if the user ID is a valid ObjectId
     if not ObjectId.is_valid(user_id):

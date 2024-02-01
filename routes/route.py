@@ -1,4 +1,4 @@
-from fastapi import Depends,APIRouter, HTTPException, Query
+from fastapi import Depends,APIRouter, HTTPException, Query,status
 from models.blogs import Blogs
 from config.database import collection_name
 from schema.schemas import individual_serial, list_serial
@@ -24,7 +24,7 @@ async def getBlogById(blog_id: str):
     else:
         raise HTTPException(status_code=404, detail="Blog not found")
 
-@blogRouter.get("{user_id}/blogs")
+@blogRouter.get("/{user_id}/blogs")
 async def getBlogByUser(user_id: str, limit: int = Query(10, description="Number of blogs to return per page"),skip: int = Query(0, description="Number of blogs to skip")):
     user=get_user_by_id(user_id)
     if user is None:
@@ -50,10 +50,17 @@ async def getBlogByUser(user_id: str, limit: int = Query(10, description="Number
 # Create a new blog
 @blogRouter.post("/")
 async def createBlog(blog: Blogs):
+    if not blog:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid request. Blog data is missing.")
+    
     new_blog = blog.dict()
-      # Removing "id" field if present in the request
-    inserted_blog = collection_name.insert_one(new_blog)
-    return {"id": str(inserted_blog.inserted_id)}
+
+    try:
+        inserted_blog = collection_name.insert_one(new_blog)
+        return {"id": str(inserted_blog.inserted_id)}
+    except Exception as e:
+        # Handle other types of errors
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An error occurred: {str(e)}")
 
 # Update an existing blog
 @blogRouter.put("/{blog_id}")
