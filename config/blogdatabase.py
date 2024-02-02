@@ -9,4 +9,4 @@ password = os.getenv('DB_PASSWORD')
 client=MongoClient(f"mongodb+srv://{username}:{password}@cluster0.9yxaavh.mongodb.net/?retryWrites=true&w=majority")
 db=client.blog_db
 
-collection_name = db.user_collection
+collection_name = db.blog_collection

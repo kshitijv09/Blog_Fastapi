@@ -1,10 +1,10 @@
 from fastapi import FastAPI
-from routes.userRoute import userRouter
-from routes.route import blogRouter
+from app.routes.userRoute import userRouter
+from app.routes.blogRoute import blogRouter
 from dotenv import load_dotenv
 
 
-# Load environment variables from .env file
+
 load_dotenv()
 
 app = FastAPI()
