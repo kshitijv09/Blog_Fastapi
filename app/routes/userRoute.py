@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jwt import create_access_token
-from pymongo import ObjectId
+from bson import ObjectId
 
 from hashing import Hash
 from config.userdatabase import db

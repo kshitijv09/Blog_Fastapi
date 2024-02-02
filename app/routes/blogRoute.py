@@ -2,7 +2,7 @@ from fastapi import Depends, APIRouter, HTTPException, Query, status
 from app.models.blogs import Blogs
 from config.blogdatabase import collection_name
 from app.schema.schemas import individual_serial, list_serial
-from pymongo import ObjectId
+from bson import ObjectId
 from jwt import verify_token, TokenData
 from app.routes.userRoute import get_user_by_id
 
