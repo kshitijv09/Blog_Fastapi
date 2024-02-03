@@ -52,7 +52,7 @@ def get_user_by_id(user_id: str,token_data: TokenData =Depends(verify_token)):
 
     return user
 
-@userRouter.put('/interests/add/{username}')
+@userRouter.put('/interests/{username}')
 def add_interests(username: str, request: UserInterestsUpdate,token_data: TokenData =Depends(verify_token)):
     existing_user = db["user_collection"].find_one({"username": username})
     if existing_user is None:
@@ -63,7 +63,7 @@ def add_interests(username: str, request: UserInterestsUpdate,token_data: TokenD
 
     return {"message": f"Interests added to user {username} successfully"}
 
-@userRouter.delete('/interests/remove/{username}/{interest_id}')
+@userRouter.delete('/interests/{username}/{interest_id}')
 def remove_interest(username: str, interest_id: str,token_data: TokenData =Depends(verify_token)):
     existing_user = db["user_collection"].find_one({"username": username})
     if existing_user is None:
