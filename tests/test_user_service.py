@@ -52,13 +52,13 @@ def test_update_profile():
 
 
 def test_add_interests():
-    response = requests.put(f'{BASE_URL}/user/interests/add/{sample_user_name}', json=sample_interest_data)
+    response = requests.put(f'{BASE_URL}/user/interests/{sample_user_name}', json=sample_interest_data)
     assert response.status_code == 200
     assert response.json()['message'] == f'Interests added to user {sample_user_name} successfully'
 
 
 def test_remove_interests():
-    response = requests.delete(f'{BASE_URL}/user/interests/remove/{sample_user_name}/{sample_interest_id}')
+    response = requests.delete(f'{BASE_URL}/user/interests/{sample_user_name}/{sample_interest_id}')
     assert response.status_code == 200
     assert response.json()['message'] == f'Interest {sample_interest_id} removed from user {sample_user_name} successfully'
 

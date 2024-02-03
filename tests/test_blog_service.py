@@ -33,11 +33,11 @@ def test_create_blog():
         'date': '2024-01-31',
         'author': 'John Doe'
     }
-    response = requests.post(f'{BASE_URL}/blog/', json=sample_blog_data)
+    response = requests.post(f'{BASE_URL}/blog', json=sample_blog_data)
     assert response.status_code == 201
     assert 'id' in response.json()
     invalid_data = {}
-    response = requests.post(f'{BASE_URL}/blog/', json=invalid_data)
+    response = requests.post(f'{BASE_URL}/blog', json=invalid_data)
     assert response.status_code == 422
 
 def test_update_blog():

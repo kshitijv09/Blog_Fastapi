@@ -8,7 +8,7 @@ from app.routes.userRoute import get_user_by_id
 
 blogRouter = APIRouter()
 
-@blogRouter.get("/")
+@blogRouter.get("")
 async def get_blogs(token_data: TokenData = Depends(verify_token)):
     blogs = list_serial(collection_name.find())
     return blogs
@@ -35,7 +35,7 @@ async def get_blog_by_user(user_id: str, limit: int = Query(10, description="Num
     paginated_blogs = blogs[skip: skip + limit]
     return paginated_blogs
 
-@blogRouter.post("/")
+@blogRouter.post("")
 async def create_blog(blog: Blogs,token_data: TokenData =Depends(verify_token)):
     if not blog:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid request. Blog data is missing.")
