@@ -9,7 +9,7 @@ from app.routes.userRoute import get_user_by_id
 blogRouter = APIRouter()
 
 @blogRouter.get("")
-async def get_blogs(token_data: TokenData = Depends(verify_token)):
+async def get_blogs(limit: int = Query(10, description="Number of blogs to return per page"), skip: int = Query(0, description="Number of blogs to skip"),token_data: TokenData = Depends(verify_token)):
     blogs = list_serial(collection_name.find())
     return blogs
 
@@ -21,15 +21,17 @@ async def get_blog_by_id(blog_id: str,token_data: TokenData =Depends(verify_toke
     else:
         raise HTTPException(status_code=404, detail="Blog not found")
 
-@blogRouter.get("/{user_id}")
+@blogRouter.get("/user/{user_id}")
 async def get_blog_by_user(user_id: str, limit: int = Query(10, description="Number of blogs to return per page"), skip: int = Query(0, description="Number of blogs to skip"),token_data: TokenData =Depends(verify_token)):
-    user = get_user_by_id(user_id)
+    
+    user = get_user_by_id(user_id,token_data)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
-
+    
     user_interests = [interest["name"] for interest in user.get("interests", [])]
-
-    blogs = list_serial(collection_name.find())
+   
+    blogs = list(collection_name.find())
+    blogs = [{**blog, "_id": str(blog["_id"])} for blog in blogs]
     blogs.sort(key=lambda x: user_interests.index(x["tag"]) if x["tag"] in user_interests else len(user_interests))
 
     paginated_blogs = blogs[skip: skip + limit]
