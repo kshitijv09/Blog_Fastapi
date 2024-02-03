@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from jwt import create_access_token
+from jwt import verify_token,TokenData
 from bson import ObjectId
 
 from hashing import Hash
@@ -26,7 +27,7 @@ def login(request: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": access_token, "token_type": "bearer"}
 
 @userRouter.put('/profile/{username}')
-def update_profile(username: str, request: UserProfileUpdate):
+def update_profile(username: str, request: UserProfileUpdate,token_data: TokenData =Depends(verify_token)):
     existing_user = db["user_collection"].find_one({"username": username})
     if existing_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with username {username} not found')
@@ -37,7 +38,7 @@ def update_profile(username: str, request: UserProfileUpdate):
     return {"message": f"Profile for user {username} updated successfully"}
 
 @userRouter.get('/{user_id}')
-def get_user_by_id(user_id: str):
+def get_user_by_id(user_id: str,token_data: TokenData =Depends(verify_token)):
     if not ObjectId.is_valid(user_id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'Invalid user ID: {user_id}')
 
@@ -52,7 +53,7 @@ def get_user_by_id(user_id: str):
     return user
 
 @userRouter.put('/interests/add/{username}')
-def add_interests(username: str, request: UserInterestsUpdate):
+def add_interests(username: str, request: UserInterestsUpdate,token_data: TokenData =Depends(verify_token)):
     existing_user = db["user_collection"].find_one({"username": username})
     if existing_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with username {username} not found')
@@ -63,7 +64,7 @@ def add_interests(username: str, request: UserInterestsUpdate):
     return {"message": f"Interests added to user {username} successfully"}
 
 @userRouter.delete('/interests/remove/{username}/{interest_id}')
-def remove_interest(username: str, interest_id: str):
+def remove_interest(username: str, interest_id: str,token_data: TokenData =Depends(verify_token)):
     existing_user = db["user_collection"].find_one({"username": username})
     if existing_user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with username {username} not found')

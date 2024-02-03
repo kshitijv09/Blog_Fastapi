@@ -14,7 +14,7 @@ async def get_blogs(token_data: TokenData = Depends(verify_token)):
     return blogs
 
 @blogRouter.get("/{blog_id}")
-async def get_blog_by_id(blog_id: str):
+async def get_blog_by_id(blog_id: str,token_data: TokenData =Depends(verify_token)):
     blog = collection_name.find_one({"_id": ObjectId(blog_id)})
     if blog:
         return individual_serial(blog)
@@ -22,7 +22,7 @@ async def get_blog_by_id(blog_id: str):
         raise HTTPException(status_code=404, detail="Blog not found")
 
 @blogRouter.get("/{user_id}/blogs")
-async def get_blog_by_user(user_id: str, limit: int = Query(10, description="Number of blogs to return per page"), skip: int = Query(0, description="Number of blogs to skip")):
+async def get_blog_by_user(user_id: str, limit: int = Query(10, description="Number of blogs to return per page"), skip: int = Query(0, description="Number of blogs to skip"),token_data: TokenData =Depends(verify_token)):
     user = get_user_by_id(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -36,7 +36,7 @@ async def get_blog_by_user(user_id: str, limit: int = Query(10, description="Num
     return paginated_blogs
 
 @blogRouter.post("/")
-async def create_blog(blog: Blogs):
+async def create_blog(blog: Blogs,token_data: TokenData =Depends(verify_token)):
     if not blog:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid request. Blog data is missing.")
 
@@ -49,7 +49,7 @@ async def create_blog(blog: Blogs):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"An error occurred: {str(e)}")
 
 @blogRouter.put("/{blog_id}")
-async def update_blog(blog_id: str, blog: Blogs):
+async def update_blog(blog_id: str, blog: Blogs,token_data: TokenData =Depends(verify_token)):
     updated_blog = blog.dict()
     result = collection_name.update_one({"_id": ObjectId(blog_id)}, {"$set": updated_blog})
     if result.modified_count == 1:
@@ -58,7 +58,7 @@ async def update_blog(blog_id: str, blog: Blogs):
         raise HTTPException(status_code=404, detail="Blog not found")
 
 @blogRouter.delete("/{blog_id}")
-async def delete_blog(blog_id: str):
+async def delete_blog(blog_id: str,token_data: TokenData =Depends(verify_token)):
     result = collection_name.delete_one({"_id": ObjectId(blog_id)})
     if result.deleted_count == 1:
         return {"message": "Blog deleted successfully"}
