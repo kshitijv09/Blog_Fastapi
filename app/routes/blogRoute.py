@@ -21,7 +21,7 @@ async def get_blog_by_id(blog_id: str,token_data: TokenData =Depends(verify_toke
     else:
         raise HTTPException(status_code=404, detail="Blog not found")
 
-@blogRouter.get("/{user_id}/blogs")
+@blogRouter.get("/{user_id}")
 async def get_blog_by_user(user_id: str, limit: int = Query(10, description="Number of blogs to return per page"), skip: int = Query(0, description="Number of blogs to skip"),token_data: TokenData =Depends(verify_token)):
     user = get_user_by_id(user_id)
     if user is None:

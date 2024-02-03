@@ -9,5 +9,5 @@ load_dotenv()
 
 app = FastAPI()
 
-app.include_router(userRouter, prefix="/users")
-app.include_router(blogRouter, prefix="/blogs")
+app.include_router(userRouter, prefix="/user")
+app.include_router(blogRouter, prefix="/blog")

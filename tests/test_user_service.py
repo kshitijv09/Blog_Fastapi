@@ -25,12 +25,12 @@ sample_interest_id = '65bbd1d37c3b6f8c88933939'
 
 
 def test_get_user_by_id():
-    response = requests.get(f'{BASE_URL}/users/{sample_user_id}')
+    response = requests.get(f'{BASE_URL}/user/{sample_user_id}')
     assert response.status_code == 200
 
 
 def test_create_user():
-    response = requests.post(f'{BASE_URL}/users/register', json=sample_user_data)
+    response = requests.post(f'{BASE_URL}/user/register', json=sample_user_data)
     assert response.status_code == 200
     assert response.json()['res'] == 'created'
     response = requests.post(f'{BASE_URL}/register', json={})
@@ -38,7 +38,7 @@ def test_create_user():
 
 
 def test_login():
-    response = requests.post(f'{BASE_URL}/users/login', data=sample_login_data)
+    response = requests.post(f'{BASE_URL}/user/login', data=sample_login_data)
     assert response.status_code == 200
     assert 'access_token' in response.json()
     response = requests.post(f'{BASE_URL}/login', data={})
@@ -46,19 +46,19 @@ def test_login():
 
 
 def test_update_profile():
-    response = requests.put(f'{BASE_URL}/users/profile/{sample_user_name}', json=sample_update_data)
+    response = requests.put(f'{BASE_URL}/user/profile/{sample_user_name}', json=sample_update_data)
     assert response.status_code == 200
     assert response.json()['message'] == f'Profile for user {sample_user_name} updated successfully'
 
 
 def test_add_interests():
-    response = requests.put(f'{BASE_URL}/users/interests/add/{sample_user_name}', json=sample_interest_data)
+    response = requests.put(f'{BASE_URL}/user/interests/add/{sample_user_name}', json=sample_interest_data)
     assert response.status_code == 200
     assert response.json()['message'] == f'Interests added to user {sample_user_name} successfully'
 
 
 def test_remove_interests():
-    response = requests.delete(f'{BASE_URL}/users/interests/remove/{sample_user_name}/{sample_interest_id}')
+    response = requests.delete(f'{BASE_URL}/user/interests/remove/{sample_user_name}/{sample_interest_id}')
     assert response.status_code == 200
     assert response.json()['message'] == f'Interest {sample_interest_id} removed from user {sample_user_name} successfully'
 
